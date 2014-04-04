@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Recommendation System for StackExchange</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Recommendation System for StackExchange</h1>
+
+<h2>Schema</h2>
+
+<p>&mdash;<strong><em>Posts</em></strong></p>
+
+<p>Id<br>
+PostTypeId<br>
+1. Question<br>
+2. Answer<br>
+3. Orphaned tag wiki<br>
+4. Tag wiki excerpt<br>
+5. Tag wiki<br>
+6. Moderator nomination<br>
+7. &ldquo;Wiki placeholder&rdquo; (seems to only be the election description)<br>
+8. Privilege wiki<br>
+AcceptedAnswerId (only present if PostTypeId is 1)<br>
+ParentID (only present if PostTypeId is 2)<br>
+CreationDate<br>
+Score<br>
+ViewCount<br>
+Body<br>
+OwnerUserId (present only if user has not been deleted; always -1 for tag wiki entries (i.e., the community user owns them))<br>
+OwnerDisplayName<br>
+LastEditorUserId<br>
+LastEditorDisplayName=&ldquo;Rich B&rdquo;<br>
+LastEditDate=&ldquo;2009-03-05T22:28:34.823&rdquo; - the date and time of the most recent edit to the post<br>
+LastActivityDate=&ldquo;2009-03-11T12:51:01.480&rdquo; - the date and time of the most recent activity on the post. For a question, this could be the post being edited, a new answer was posted, a bounty was started, etc.<br>
+Title<br>
+Tags<br>
+AnswerCount<br>
+CommentCount<br>
+FavoriteCount<br>
+ClosedDate (present only if the post is closed)<br>
+CommunityOwnedDate (present only if post is community wikied)<br></p>
+
+<p>&mdash;<strong><em>Users</em></strong></p>
+
+<p>Id<br>
+Reputation<br>
+CreationDate<br>
+DisplayName<br>
+LastAccessDate<br>
+WebsiteUrl<br>
+Location<br>
+AboutMe<br>
+Views<br>
+UpVotes<br>
+DownVotes<br>
+EmailHash (now always blank)<br>
+AccountId<br>
+Age<br></p>
+
+</body>
+
+</html>
+
