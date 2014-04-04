@@ -1,4 +1,5 @@
-setwd("/Users/divikhanna/Desktop/sustainability.stackexchange.com.7z Folder/")
+#setwd("/Users/divikhanna/Desktop/sustainability.stackexchange.com.7z Folder/")
+setwd("/Users/Apple/Columbia/Github/ads_final_proj/data/sustainability.stackexchange.com/")
 require(XML)
 require(plyr)
 
@@ -36,3 +37,21 @@ datausers <- xmlParse("Users.xml", getDTD = F)
 usersXMLDF = ldply(llply(xmlToList(datausers), function(x) rbind.fill(data.frame(t(x)))))
 usersXMLDF = usersXMLDF[,-1]
 View(usersXMLDF)
+
+
+#================================================================================
+names(postsXMLDF)
+postsXMLDF$AnswerCount = as.numeric(postsXMLDF$AnswerCount)
+summary(postsXMLDF$AnswerCount)
+# questions in the data set
+questions = postsXMLDF[postsXMLDF$PostTypeId == 1, ]
+NROW(questions)
+
+# FALSE = number of questions in data, TRUE = no accepted answer yet
+count(is.na(questions$AcceptedAnswerId))
+# no of question for which answer count is 0 or NA
+count(questions$AnswerCount == 0 | is.na(questions$AnswerCount) )
+
+# 206 questions have been answered out of 440
+count(is.na(postsXMLDF$AcceptedAnswerId))
+
