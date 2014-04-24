@@ -1,5 +1,5 @@
-#setwd("/Users/divikhanna/Desktop/sustainability.stackexchange.com.7z Folder/")
-setwd("/Users/Apple/Columbia/Github/ads_final_proj/data/sustainability.stackexchange.com/")
+setwd("/Users/divikhanna/Desktop/sustainability.stackexchange.com.7z Folder/")
+#setwd("/Users/Apple/Columbia/Github/ads_final_proj/data/sustainability.stackexchange.com/")
 require(XML)
 require(plyr)
 
@@ -54,4 +54,22 @@ count(questions$AnswerCount == 0 | is.na(questions$AnswerCount) )
 
 # 206 questions have been answered out of 440
 count(is.na(postsXMLDF$AcceptedAnswerId))
+
+# Reputation Histogram Sustainability
+require(ggplot2)
+usersXMLDF$Reputation <- as.numeric(usersXMLDF$Reputation)
+ggplot(data = usersXMLDF) + geom_histogram(aes(x = usersXMLDF$Reputation))
+ggplot(data = usersXMLDF) + geom_density(aes(x = usersXMLDF$Reputation))
+
+require(stringr)
+usersXMLDF$CreationDate <- as.character(usersXMLDF$CreationDate)
+usersXMLDF$CreationDate <- str_sub(usersXMLDF$CreationDate, 1, 10)
+usersXMLDF$CreationDate <- as.Date(usersXMLDF$CreationDate)
+ggplot(usersXMLDF, aes(y = Reputation, x = CreationDate)) + geom_point()
+
+usersXMLDF$LastAccessDate <- as.character(usersXMLDF$LastAccessDate)
+usersXMLDF$LastAccessDate <- str_sub(usersXMLDF$LastAccessDate, 1, 10)
+usersXMLDF$LastAccessDate <- as.Date(usersXMLDF$LastAccessDate)
+ggplot(usersXMLDF, aes(y = Reputation, x = LastAccessDate)) + geom_point()
+
 
