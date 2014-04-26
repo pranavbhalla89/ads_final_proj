@@ -83,3 +83,28 @@ testacceptedUsers = acceptedUsers[-train,]
 
 # combining the tags for users into 1 row
 collapsedUsers = aggregate(Tags ~ OwnerUserId + Reputation, trainacceptedUsers, paste, collapse = "")
+
+
+
+# Each Tag per User ( Should be replacing code above) Haven't deleted any code yet. 
+
+
+newFrame <- data.frame(tags=character(), 
+                       User=character(), 
+                       stringsAsFactors=FALSE) 
+
+for (i in 1:nrow(oneUser))
+{
+  t <- str_extract_all(oneUser[i,]$Tags, "(<)(.*?)(>)")
+  z <- strsplit(t[[1]], " ")
+  z1 <- as.data.frame(unlist(z))
+  names(z1)[1]<-paste("tags")
+  z1$users <- rep(oneUser[i,]$DisplayName,length(z))  
+  z1
+  newFrame <- rbind(newFrame,z1)
+  
+}
+
+TagAndUsers <- newFrame
+View(TagAndUsers)
+
