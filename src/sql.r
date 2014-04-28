@@ -77,6 +77,7 @@ one   <- c(as.data.frame(unlist(t)),as.data.frame(oneUser[2,]$DisplayName))
 
 
 # separating the answered questions into testing and training (80/20)
+set.seed(4231)
 train = sample(nrow(acceptedUsers), 0.8*nrow(acceptedUsers))
 trainacceptedUsers = acceptedUsers[train,]
 testacceptedUsers = acceptedUsers[-train,]
