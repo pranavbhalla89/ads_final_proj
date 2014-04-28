@@ -53,12 +53,14 @@ for (k in 1:nrow(testacceptedUsers))
         validUser.AtleastOneTag[i] = str_detect(collapsedUsers$Tags[i], tag)
     }
     # matching the expanded tags
-    for (j in 1:length(unlist(expandedClusterTagsList)))
-    {
-      tag = expandedClusterTagsList[[1]][j]
-      if(validUser.AtleastOneTagExpanded[i] == FALSE)
-        validUser.AtleastOneTagExpanded[i] = str_detect(collapsedUsers$Tags[i], tag)
-    } 
+    if(length(unlist(expandedClusterTagsList)) != 0){
+      for (j in 1:length(unlist(expandedClusterTagsList)))
+      {
+        tag = expandedClusterTagsList[[1]][j]
+        if(validUser.AtleastOneTagExpanded[i] == FALSE)
+          validUser.AtleastOneTagExpanded[i] = str_detect(collapsedUsers$Tags[i], tag)
+      }
+    }
   }
   
   # user has answered questions on each tag
@@ -110,6 +112,7 @@ for (k in 1:nrow(testacceptedUsers))
 names(testResultsDF) = c("actualAnsweree", "AllTagsMatchUser", "FOUND.All",  
                          "AtleastOneTagMatchUser", "FOUND.Atleast",
                          "AtleastOneTagMatchUserExpanded", "FOUND.Expanded")
+
 View(testResultsDF)
 # accuracy, not sure if this a good measure
 table(testResultsDF$FOUND.All)["TRUE"] / nrow(testResultsDF)
@@ -124,6 +127,9 @@ table(testResultsDF$FOUND.Expanded)["TRUE"] / nrow(testResultsDF)
 # cluster the tags
 require(hash)
 wc <-  leading.eigenvector.community(graph)
+wc <- edge.betweenness.community(graph)
+wc <- walktrap.community(graph)
+wc = infomap.community(graph)
 clusteredTags = membership(wc)
 
 # creating hashes for both ways
