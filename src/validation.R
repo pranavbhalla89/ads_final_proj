@@ -48,9 +48,13 @@ for (k in 1:nrow(testacceptedUsers))
       # mathcing the new questions tags
       tag = newQuesTagsList[[1]][j]
       if(validUser.AllTags[i] == TRUE)
-        validUser.AllTags[i] = str_detect(collapsedUsers$Tags[i], tag)
+        validUser.AllTags[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+        # changed to handle special chars in string <c++>
+        #validUser.AllTags[i] = str_detect(collapsedUsers$Tags[i], tag)
       if(validUser.AtleastOneTag[i] == FALSE)
-        validUser.AtleastOneTag[i] = str_detect(collapsedUsers$Tags[i], tag)
+        validUser.AtleastOneTag[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+        # changed to handle special chars in string <c++>
+        #validUser.AtleastOneTag[i] = str_detect(collapsedUsers$Tags[i], tag)
     }
     # matching the expanded tags
     if(length(unlist(expandedClusterTagsList)) != 0){
@@ -58,7 +62,9 @@ for (k in 1:nrow(testacceptedUsers))
       {
         tag = expandedClusterTagsList[[1]][j]
         if(validUser.AtleastOneTagExpanded[i] == FALSE)
-          validUser.AtleastOneTagExpanded[i] = str_detect(collapsedUsers$Tags[i], tag)
+          validUser.AtleastOneTagExpanded[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+          # changed to handle special chars in string <c++>
+          #validUser.AtleastOneTagExpanded[i] = str_detect(collapsedUsers$Tags[i], tag)
       }
     }
   }
@@ -171,7 +177,9 @@ expandTags <- function(newQuesTagsList, hashByTag, hashByClusterNumber)
   # make sure the original tags are not present in the expanded list
   for (j in 1:length(unlist(newQuesTagsList)))
   {
-    expandedClusterTags = str_replace_all(expandedClusterTags, newQuesTagsList[[1]][j], "")
+    # changed to handle special chars in string <c++>
+    #expandedClusterTags = str_replace_all(expandedClusterTags, newQuesTagsList[[1]][j], "")
+    expandedClusterTags = gsub(newQuesTagsList[[1]][j], "", expandedClusterTags, fixed=TRUE)
   }
   expandedClusterTags
 }
