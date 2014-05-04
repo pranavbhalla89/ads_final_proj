@@ -85,7 +85,25 @@ testacceptedUsers = acceptedUsers[-train,]
 # combining the tags for users into 1 row
 collapsedUsers = aggregate(Tags ~ OwnerUserId + Reputation, trainacceptedUsers, paste, collapse = "")
 
-
+# hash for owner tag count
+# <key> is combo of owenerid and tag
+# <value> is the count
+# 1234<r>: 50
+ownerTagCountHash = hash()
+for (i in 1:nrow(collapsedUsers)){
+  ownerId = collapsedUsers[i,]$OwnerUserId
+  
+  allTags = collapsedUsers[i,]$Tags
+  tagList = str_extract_all(allTags, "(<)(.*?)(>)")
+  
+  for (j in 1:length(unlist(tagList))){
+    key = paste(ownerId, tagList[[1]][j], sep="")
+    if(is.null(ownerTagCountHash[[key]])){
+      ownerTagCountHash[[key]] = 0
+    }
+    ownerTagCountHash[[key]] = ownerTagCountHash[[key]] + 1  
+  } 
+}
 
 # Each Tag per User ( Should be replacing code above) Haven't deleted any code yet. 
 

@@ -19,7 +19,7 @@
 # hashByClusterNumber
 # collapsedUsers
 # ============================================================================
-testResultsDF = data.frame(matrix(ncol = 7))
+testResultsDF = data.frame(matrix(ncol = 9))
 
 for (k in 1:nrow(testacceptedUsers))
 {
@@ -41,8 +41,17 @@ for (k in 1:nrow(testacceptedUsers))
   # from the expanded list
   validUser.AtleastOneTagExpanded = as.character(rep(FALSE, nrow(collapsedUsers)))
   
+  # the data frame that holds the scores for users for this question
+  # ownerID, score
+  # will add score from original tags and expanded tags
+  scoreDF = data.frame(matrix(ncol = 2))
+  names(scoreDF) = c("ownerUserId", "score")
+  # we only store non-zero score users
+  scoreIndex = 0
+                           
   for (i in 1:nrow(collapsedUsers))
   {
+    score = 0
     for (j in 1:length(unlist(newQuesTagsList)))
     {
       # mathcing the new questions tags
@@ -51,8 +60,13 @@ for (k in 1:nrow(testacceptedUsers))
         validUser.AllTags[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
         # changed to handle special chars in string <c++>
         #validUser.AllTags[i] = str_detect(collapsedUsers$Tags[i], tag)
-      if(validUser.AtleastOneTag[i] == FALSE)
-        validUser.AtleastOneTag[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+      #if(validUser.AtleastOneTag[i] == FALSE)
+       # validUser.AtleastOneTag[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+      if(grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)){
+        validUser.AtleastOneTag[i] = TRUE
+        key = paste(collapsedUsers$OwnerUserId[i], tag, sep="")
+        score = score + ownerTagCountHash[[key]]
+      }
         # changed to handle special chars in string <c++>
         #validUser.AtleastOneTag[i] = str_detect(collapsedUsers$Tags[i], tag)
     }
@@ -61,11 +75,21 @@ for (k in 1:nrow(testacceptedUsers))
       for (j in 1:length(unlist(expandedClusterTagsList)))
       {
         tag = expandedClusterTagsList[[1]][j]
-        if(validUser.AtleastOneTagExpanded[i] == FALSE)
-          validUser.AtleastOneTagExpanded[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+        #if(validUser.AtleastOneTagExpanded[i] == FALSE)
+        #  validUser.AtleastOneTagExpanded[i] = grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)
+        if(grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)){
+          validUser.AtleastOneTagExpanded[i] = TRUE
+          key = paste(collapsedUsers$OwnerUserId[i], tag, sep="")
+          score = score + ownerTagCountHash[[key]]
+        }
           # changed to handle special chars in string <c++>
           #validUser.AtleastOneTagExpanded[i] = str_detect(collapsedUsers$Tags[i], tag)
       }
+    }
+    # score computed for this user, save only non-zero score users
+    if(score != 0){
+      scoreDF[scoreIndex,] = c(collapsedUsers$OwnerUserId[i], score)
+      scoreIndex = scoreIndex + 1
     }
   }
   
@@ -109,22 +133,31 @@ for (k in 1:nrow(testacceptedUsers))
   foundAtleast = str_detect(matchListAtleast, as.vector(actualAnswereeId))
   foundExpanded = str_detect(matchListAtleastExpanded, as.vector(actualAnswereeId))
   
+  # ordering based on score
+  scoreDF = scoreDF[ order(-scoreDF$score), ]
+  # getting the user ids
+  # top 10%
+  rankedByScore = do.call(paste, as.list(scoreDF[1:(nrow(collapsedUsers)*0.1),]$ownerUserId))
+  foundRanked = str_detect(rankedByScore, as.vector(actualAnswereeId))
+  
   testResultsDF[k,] = c(as.vector(actualAnswereeId), matchListAll, foundAll, 
                         matchListAtleast, foundAtleast, matchListAtleastExpanded,
-                        foundExpanded)
+                        foundExpanded, rankedByScore, foundRanked)
+  print(k)
 }
 # loop ends here
 
 names(testResultsDF) = c("actualAnsweree", "AllTagsMatchUser", "FOUND.All",  
                          "AtleastOneTagMatchUser", "FOUND.Atleast",
-                         "AtleastOneTagMatchUserExpanded", "FOUND.Expanded")
+                         "AtleastOneTagMatchUserExpanded", "FOUND.Expanded",
+                         "ExpandedRanked", "FOUND.Ranked")
 
 View(testResultsDF)
 # accuracy, not sure if this a good measure
 table(testResultsDF$FOUND.All)["TRUE"] / nrow(testResultsDF)
 table(testResultsDF$FOUND.Atleast)["TRUE"] / nrow(testResultsDF)
 table(testResultsDF$FOUND.Expanded)["TRUE"] / nrow(testResultsDF)
-
+table(testResultsDF$FOUND.Ranked)["TRUE"] / nrow(testResultsDF)
 
 # ============================================================================
 # using the clustered tags to expand the tags for the question
@@ -183,6 +216,11 @@ expandTags <- function(newQuesTagsList, hashByTag, hashByClusterNumber)
   }
   expandedClusterTags
 }
+
+
+
+
+
 
 #str_detect(unlist(str_extract_all(collapsedUsers$Tags[i], "(<)(.*?)(>)")), "pb")
 # ============================================================================
