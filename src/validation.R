@@ -13,11 +13,15 @@
 
 # ============================================================================
 # TESTING: requires the following objects to exist
-# testacceptedUsers
-# function: expandTags
-# hashByTag
-# hashByClusterNumber
-# collapsedUsers
+# testacceptedUsers - sql
+# function: expandTags - validation
+# hashByTag - validation
+# hashByClusterNumber - validation
+# collapsedUsers - sql
+# ownerTagCountHash - sql
+# truncatingLength - weight_model
+# repWt - weight_model
+# tagScoreWt - weight_model
 # ============================================================================
 testResultsDF = data.frame(matrix(ncol = 9))
 
@@ -47,7 +51,7 @@ for (k in 1:nrow(testacceptedUsers))
   scoreDF = data.frame(matrix(ncol = 2))
   names(scoreDF) = c("ownerUserId", "score")
   # we only store non-zero score users
-  scoreIndex = 0
+  scoreIndex = 1
                            
   for (i in 1:nrow(collapsedUsers))
   {
@@ -88,8 +92,16 @@ for (k in 1:nrow(testacceptedUsers))
     }
     # score computed for this user, save only non-zero score users
     if(score != 0){
-      scoreDF[scoreIndex,] = c(collapsedUsers$OwnerUserId[i], score)
+      # weighted score based on rep and tag score
+      rep = as.numeric(as.character(collapsedUsers$Reputation[i]))
+      ownerUserId = as.numeric(as.character(collapsedUsers$OwnerUserId[i]))
+      score  = (repWt*rep) + (tagScoreWt*score)
+      scoreDF[scoreIndex,] = c(ownerUserId, score)
       scoreIndex = scoreIndex + 1
+      
+      #ownerUserId = as.numeric(as.character(collapsedUsers$OwnerUserId[i]))
+      #scoreDF[scoreIndex,] = c(ownerUserId, score)
+      #scoreIndex = scoreIndex + 1
     }
   }
   
@@ -137,7 +149,14 @@ for (k in 1:nrow(testacceptedUsers))
   scoreDF = scoreDF[ order(-scoreDF$score), ]
   # getting the user ids
   # top 10%
-  rankedByScore = do.call(paste, as.list(scoreDF[1:(nrow(collapsedUsers)*0.1),]$ownerUserId))
+  #rankedByScore = do.call(paste, as.list(scoreDF[1:(nrow(collapsedUsers)*0.1),]$ownerUserId))
+  # truncated based on optimum truncating length
+  cutLength = truncatingLength
+  if(truncatingLength > nrow(scoreDF)){
+    cutLength = nrow(scoreDF)
+  }
+  rankedByScore = do.call(paste, as.list(scoreDF[1:cutLength,]$ownerUserId))
+  
   foundRanked = str_detect(rankedByScore, as.vector(actualAnswereeId))
   
   testResultsDF[k,] = c(as.vector(actualAnswereeId), matchListAll, foundAll, 
@@ -165,6 +184,7 @@ table(testResultsDF$FOUND.Ranked)["TRUE"] / nrow(testResultsDF)
 # assume the graph object has been setup
 # cluster the tags
 require(hash)
+require(igraph)
 wc <-  leading.eigenvector.community(graph)
 wc <- edge.betweenness.community(graph)
 wc <- walktrap.community(graph)
@@ -216,10 +236,6 @@ expandTags <- function(newQuesTagsList, hashByTag, hashByClusterNumber)
   }
   expandedClusterTags
 }
-
-
-
-
 
 
 #str_detect(unlist(str_extract_all(collapsedUsers$Tags[i], "(<)(.*?)(>)")), "pb")

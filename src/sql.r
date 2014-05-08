@@ -76,6 +76,8 @@ one   <- c(as.data.frame(unlist(t)),as.data.frame(oneUser[2,]$DisplayName))
 one   <- c(as.data.frame(unlist(t)),as.data.frame(oneUser[2,]$DisplayName))
 
 
+require(hash)
+require(stringr)
 # separating the answered questions into testing and training (80/20)
 set.seed(4231)
 train = sample(nrow(acceptedUsers), 0.8*nrow(acceptedUsers))
