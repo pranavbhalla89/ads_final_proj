@@ -1,0 +1,42 @@
+# how to run the code
+
+1. file="sustainibility data cleaning"
+  generate postsXMLDF, usersXMLDF
+
+2. file="sql"
+  generate acceptedUsers, 
+  then find this line
+  # separating the answered questions into testing and training (80/20)
+
+  run the code to create trainacceptedUsers, testacceptedUsers, collapsedUsers, 
+  ownerTagCountHash (run the for loop)
+
+3. file="tag clusters"
+  create variables upto t1
+  create variables pairs and graph
+
+4. file="validation"
+  find this line
+  # using the clustered tags to expand the tags for the question
+  run whatever commiunity algorithm (walktrap, infomap) on the graph object
+  create hashByTag, hashByClusterNumber by running the for loop below
+
+  also register the function "expandTags"
+
+5. file="weight_model"
+  run this file sequentially
+  the first for loop will give you weights (tagScoreWt, repWt)
+
+  the second for loop will give you "truncatingLength"
+
+6. file="validation"
+  find this line
+  # TESTING: requires the following objects to exist
+
+  run code upto
+  # accuracy, not sure if this a good measure
+  below code line gives accuracy for ranked expanded cluster tags
+  table(testResultsDF$FOUND.Ranked)["TRUE"] / nrow(testResultsDF)
+
+  
+

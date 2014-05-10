@@ -1,3 +1,4 @@
+#36
 # ==============================================================================
 # building a model for assigning weights to reputation and tag score
 
@@ -20,6 +21,7 @@ for (k in 1:nrow(trainacceptedUsers))
   # make sure you have registered the function below, and created the required hashes
   expandedClusterTags = expandTags(newQuesTagsList, hashByTag, hashByClusterNumber)
   expandedClusterTagsList = str_extract_all(expandedClusterTags, "(<)(.*?)(>)")
+  print(expandedClusterTagsList)
   
   # loop through all the users
   for (i in 1:nrow(collapsedUsers))
@@ -31,7 +33,7 @@ for (k in 1:nrow(trainacceptedUsers))
       tag = newQuesTagsList[[1]][j]
       if(grepl(tag, collapsedUsers$Tags[i], fixed=TRUE)){
         key = paste(collapsedUsers$OwnerUserId[i], tag, sep="")
-        score = score + ownerTagCountHash[[key]]
+        score = score + ownerTagCountHash[[key]] # Divi: can weight score monotonically
       }
     }
     # matching the expanded tags
@@ -50,6 +52,7 @@ for (k in 1:nrow(trainacceptedUsers))
     if(score != 0){
       modelDF[scoreIndex,] = c(collapsedUsers$Reputation[i], score, collapsedUsers$OwnerUserId[i] == actualAnswereeId)
       scoreIndex = scoreIndex + 1
+      print(c(k, " ", scoreIndex))
     }    
   }# for loop i, done with all the users
   print(k)
