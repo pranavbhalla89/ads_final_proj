@@ -178,8 +178,22 @@ for (k in 1:nrow(trainacceptedUsers))
 # loop ends here
 
 names(truncatingDF) = c("actualAnsweree", "ordered.by.score", "found.at")
+x= truncatingDF[,c(1,3)]
+head(x)
 
+head(truncatingDF$actualAnsweree, truncatingDF$found.at)
 View(truncatingDF)
 # truncating length
 truncatingLength = mean(as.numeric(na.omit(truncatingDF$found.at)))
 truncatingLength = ceiling(truncatingLength)
+
+?colMeans
+diffTruncDF = as.data.frame(colMeans(diffTruncDF))
+names(diffTruncDF) = "diffTruncDF"
+View(diffTruncDF)
+
+require(ggplot2)
+ggplot(data=diffTruncDF, aes(y=diffTruncDF,x=c(1:20))) + 
+  geom_line() + xlab("Truncating Length for Number of users (optimum length is 4)") + ylab("Accuracy") +
+  geom_vline(aes(xintercept = 4, colour="red"), linetype=2, size=1.5) +
+  ggtitle("Accuracy at different truncating lengths - Sustainibility Data")

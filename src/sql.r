@@ -86,7 +86,7 @@ testacceptedUsers = acceptedUsers[-train,]
 
 # combining the tags for users into 1 row
 collapsedUsers = aggregate(Tags ~ OwnerUserId + Reputation, trainacceptedUsers, paste, collapse = "")
-
+View(collapsedUsers)
 # hash for owner tag count
 # <key> is combo of owenerid and tag
 # <value> is the count

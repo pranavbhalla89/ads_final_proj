@@ -24,6 +24,7 @@
 # tagScoreWt - weight_model
 # ============================================================================
 testResultsDF = data.frame(matrix(ncol = 9))
+diffTruncDF = data.frame(matrix(ncol = 20))
 
 for (k in 1:nrow(testacceptedUsers))
 {
@@ -151,12 +152,24 @@ for (k in 1:nrow(testacceptedUsers))
   # top 10%
   #rankedByScore = do.call(paste, as.list(scoreDF[1:(nrow(collapsedUsers)*0.1),]$ownerUserId))
   # truncated based on optimum truncating length
-  cutLength = truncatingLength
-  if(truncatingLength > nrow(scoreDF)){
-    cutLength = nrow(scoreDF)
-  }
-  rankedByScore = do.call(paste, as.list(scoreDF[1:cutLength,]$ownerUserId))
   
+  foundRanked = FALSE
+  for (j in 1:20){
+    truncatingLength = j
+    cutLength = truncatingLength
+    if(truncatingLength > nrow(scoreDF)){
+      cutLength = nrow(scoreDF)
+    }
+    rankedByScore = do.call(paste, as.list(scoreDF[1:cutLength,]$ownerUserId))  
+    foundRanked = str_detect(rankedByScore, as.vector(actualAnswereeId))
+    
+    diffTruncDF[k,j] = foundRanked
+  }
+  cutLength = truncatingLength
+  if(truncatingLength > nrow(scoreDF))
+    cutLength = nrow(scoreDF)
+    
+  rankedByScore = do.call(paste, as.list(scoreDF[1:cutLength,]$ownerUserId))  
   foundRanked = str_detect(rankedByScore, as.vector(actualAnswereeId))
   
   testResultsDF[k,] = c(as.vector(actualAnswereeId), matchListAll, foundAll, 
@@ -220,8 +233,10 @@ expandTags <- function(newQuesTagsList, hashByTag, hashByClusterNumber)
   for (j in 1:length(unlist(newQuesTagsList)))
   {
     clusterForTag = hashByTag[[newQuesTagsList[[1]][j]]]
-    allTagsInCluster = hashByClusterNumber[[clusterForTag]]
-    expandedClusterTags = c(expandedClusterTags, allTagsInCluster)
+    if(!is.null(clusterForTag)){
+      allTagsInCluster = hashByClusterNumber[[clusterForTag]]
+      expandedClusterTags = c(expandedClusterTags, allTagsInCluster)  
+    }
   }
   # make sure the tags in the list are unique
   expandedClusterTags = unique(unlist(expandedClusterTags))

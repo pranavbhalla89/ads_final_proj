@@ -1,5 +1,5 @@
 #setwd("/Users/divikhanna/Desktop/sustainability.stackexchange.com.7z Folder/")
-setwd("/Users/Apple/Columbia/Github/ads_final_proj/data/travel.stackexchange.com/")
+setwd("/Users/Apple/Columbia/Github/ads_final_proj/data/sustainability.stackexchange.com/")
 
 require(XML)
 require(plyr)
